@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
+import org.bukkit.event.block.SignChangeEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -24,6 +25,18 @@ public class LogtoolSpigot extends JavaPlugin implements Listener {
         // Register the custom messaging channel to communicate with BungeeCord
         Messenger messenger = getServer().getMessenger();
         messenger.registerOutgoingPluginChannel(this, "logtool:channel");
+    }
+
+    @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        Player player = event.getPlayer();
+        String[] lines = event.getLines();
+        String signContent = String.join(" | ", lines);
+
+        // Send sign content to BungeeCord
+        sendDataToBungee(player, "SignChange", signContent);
+
+        getLogger().info(player.getName() + " wrote a sign with content: " + signContent);
     }
 
     @EventHandler
